@@ -1,0 +1,52 @@
+# Fly.io configuration for a SEPARATE 2-day live demo of Startup Singam ERP.
+#
+# This file is intentionally distinct from fly.toml so the existing app
+# ("singam-1234567") is never touched: different app name, different volume,
+# different database. Deploy with:
+#
+#   export FLY_API_TOKEN=...                 # token with write access to this app
+#   fly volumes create singam_live_data --app singam-s03-live --region sin --size 1
+#   fly deploy --config fly.live.toml --remote-only --ha=false
+#
+# Tear down after the 2 days (the volume holds the only data):
+#
+#   fly apps destroy singam-s03-live
+#   fly volumes destroy singam_live_data -a singam-s03-live
+
+app = "singam-s03-demo-31311"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "12000"
+  # A fresh volume is seeded on first boot from src/lib/db/seed.ts.
+  SINGAM_DB_PATH = "/data/singam.db"
+  # Review/demo link: enables the persona switcher and the returned one-time code
+  # (no mail/SMS gateway in the prototype). Remove for a real, secured deployment.
+  SINGAM_AUTH_DEV = "1"
+
+[http_service]
+  internal_port = 12000
+  force_https = true
+  # For a 2-day demo, keep one machine running so the link never cold-starts.
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[[mounts]]
+  source = "singam_live_data"
+  destination = "/data"

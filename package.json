@@ -1,0 +1,40 @@
+{
+  "name": "startup-singam-erp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Operations and investment control for the Startup Singam startup-show lifecycle (startup, investor, production, finance, community, marketing).",
+  "scripts": {
+    "dev": "next dev -p 12000",
+    "build": "next build",
+    "start": "next start -p 12000",
+    "serve": "bash scripts/serve.sh",
+    "serve:stop": "bash scripts/serve-stop.sh",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "check:simulation": "tsx scripts/check-simulation.ts",
+    "verify:journeys": "tsx scripts/verify-journeys.ts",
+    "verify:walkthrough": "python3 scripts/verify-walkthrough.py",
+    "db:reset": "node scripts/reset-db.mjs",
+    "package": "bash scripts/package.sh"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "next": "15.5.29",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.29",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}

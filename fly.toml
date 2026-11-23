@@ -1,0 +1,47 @@
+# Fly.io configuration for Startup Singam ERP.
+#
+# The app is a single Next.js server that keeps all state in one SQLite file on a mounted
+# volume, so one machine + one volume is the whole topology. The volume is what makes the
+# URL durable: redeploys replace the machine but keep /data.
+
+app = "singam-1234567"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "12000"
+  # The SQLite file lives on the volume below; a fresh volume is seeded on first boot.
+  SINGAM_DB_PATH = "/data/singam.db"
+  # This is a review/demo link. It enables the two development affordances the prototype
+  # relies on: the "act as" persona switcher and the one-time code returned to the caller
+  # (there is no mail/SMS gateway). Remove this line for a real, secured deployment.
+  SINGAM_AUTH_DEV = "1"
+
+[http_service]
+  internal_port = 12000
+  force_https = true
+  # Stop the machine when idle and wake it on the next request. The volume keeps the data;
+  # this keeps a demo app off the always-on bill.
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+# Persistent storage for the SQLite database. Created with:
+#   fly volumes create singam_data --region sin --size 1
+[[mounts]]
+  source = "singam_data"
+  destination = "/data"

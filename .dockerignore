@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.logs
+data
+uploads
+*.log
+startup-singam-erp.zip
+.openhands
