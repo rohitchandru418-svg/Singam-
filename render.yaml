@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: singam-erp
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerCommand: sh -c "npx next start -H 0.0.0.0 -p $PORT"
+    healthCheckPath: /api/health
+    envVars:
+      - key: SINGAM_DB_PATH
+        value: /tmp/singam.db
+      - key: SINGAM_AUTH_DEV
+        value: "1"
